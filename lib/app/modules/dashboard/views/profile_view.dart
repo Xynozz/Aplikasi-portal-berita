@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:test/app/data/profile_response.dart';
 import 'package:test/app/modules/profile/controllers/profile_controller.dart';
-// import 'package:lottie/lottie.dart';
+import 'package:lottie/lottie.dart';
 
 class ProfileView extends GetView<ProfileController> {
   @override
@@ -11,42 +11,100 @@ class ProfileView extends GetView<ProfileController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+              Get.defaultDialog(
+                title: "Konfirmasi Logout",
+                middleText: "Apakah Anda yakin ingin keluar?",
+                textCancel: "Batal",
+                textConfirm: "Logout",
+                confirmTextColor: Colors.white,
+                onConfirm: () {
+                  controller.logout();
+                  Get.back(); // Menutup dialog setelah logout
+                },
+                onCancel: () {
+                  Get.back(); // Menutup dialog jika batal
+                },
+              );
+            },
+        child: const Icon(Icons.logout),
+      ),
       appBar: AppBar(
         title: const Text('Profile'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: controller.logout,
-          ),
-        ],
+        // actions: [
+        //   IconButton(
+        //     icon: const Icon(Icons.logout),
+        //     onPressed: () {
+        //       Get.defaultDialog(
+        //         title: "Konfirmasi Logout",
+        //         middleText: "Apakah Anda yakin ingin keluar?",
+        //         textCancel: "Batal",
+        //         textConfirm: "Logout",
+        //         confirmTextColor: Colors.white,
+        //         onConfirm: () {
+        //           controller.logout();
+        //           Get.back(); // Menutup dialog setelah logout
+        //         },
+        //         onCancel: () {
+        //           Get.back(); // Menutup dialog jika batal
+        //         },
+        //       );
+        //     },
+        //   ),
+        // ],
       ),
       body: Center(
-        child: FutureBuilder<ProfileResponse>(
-          future: controller.getProfile(),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return CircularProgressIndicator();
-            } else if (snapshot.hasError) {
-              return Text("Error: ${snapshot.error}");
-            } else if (snapshot.hasData) {
-              var data = snapshot.data!;
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: FutureBuilder<ProfileResponse>(
+            future: controller.getProfile(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(
+                  child: Lottie.network(
+                    'https://gist.githubusercontent.com/olipiskandar/4f08ac098c81c32ebc02c55f5b11127b/raw/6e21dc500323da795e8b61b5558748b5c7885157/loading.json',
+                    repeat: true,
+                    width: MediaQuery.of(context).size.width / 1,
+                    errorBuilder: (context, error, stackTrace) {
+                      return const Text("Loading animation failed");
+                    },
+                  ),
+                );
+              }
+
+              if (snapshot.hasError) {
+                return const Center(
+                  child: Text("Failed to load profile"),
+                );
+              }
+
+              final data = snapshot.data;
+
+              if (data == null || data.email == null || data.email!.isEmpty) {
+                return const Center(child: Text("No profile data available"));
+              }
+
               return Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text("Name: ${data.name}"),
+                  if (data.avatar != null)
+                    CircleAvatar(
+                      backgroundImage: NetworkImage(data.avatar!),
+                      radius: 50,
+                    ),
+                  const SizedBox(height: 8),
+                  Text(
+                    "${data.name}",
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.bold),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text("Email: ${data.email}"),
-                  ),
+                  const SizedBox(height: 8),
+                  Text(" ${data.email}"),
                 ],
               );
-            } else {
-              return Text("No data available");
-            }
-          },
+            },
+          ),
         ),
       ),
     );

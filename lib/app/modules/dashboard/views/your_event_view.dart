@@ -110,7 +110,21 @@ class YourEventView extends GetView {
                         label: const Text('Delete',
                             style: TextStyle(color: Colors.red)),
                         onPressed: () {
-                          controller.deleteEvent(id: event.id!);
+                          Get.defaultDialog(
+                            title: "Konfirmasi",
+                            middleText: "Apakah Anda yakin ingin menghapus event?",
+                            textCancel: "Batal",
+                            textConfirm: "Hapus",
+                            confirmTextColor: Colors.white,
+                            onConfirm: () {
+                              controller.deleteEvent(id: event.id!);
+                              ();
+                              Get.back(); // Menutup dialog setelah logout
+                            },
+                            onCancel: () {
+                              Get.back(); // Menutup dialog jika batal
+                            },
+                          );
                         },
                       ),
                     ],

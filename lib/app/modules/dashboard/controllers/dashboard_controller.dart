@@ -162,7 +162,7 @@ class DashboardController extends GetxController {
 
   void deleteEvent({required int id}) async {
     final response = await _getConnect.post(
-      '${BaseUrl.deleteEvents}$id',
+      '${BaseUrl.deleteEvents}/$id',
       {
         '_method': 'delete',
       },
