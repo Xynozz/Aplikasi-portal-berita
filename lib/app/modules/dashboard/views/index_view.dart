@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:get/get.dart';
 import 'package:test/app/data/event_response.dart';
 import 'package:test/app/modules/dashboard/controllers/dashboard_controller.dart';
@@ -12,7 +11,6 @@ class IndexView extends GetView {
   @override
   Widget build(BuildContext context) {
     DashboardController controller = Get.put(DashboardController());
-
     final ScrollController scrollController = ScrollController();
 
     return Scaffold(
@@ -43,30 +41,30 @@ class IndexView extends GetView {
               controller: scrollController,
               shrinkWrap: true,
               itemBuilder: (context, index) {
+                final event = snapshot.data!.events![index];
                 return ZoomTapAnimation(
                   onTap: () {
-                    Get.to(() => EventDetailView(), id: 1);
+                    // Pass event object ke EventDetailView
+                    Get.to(() => EventDetailView(event: event));
                   },
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Image.network(
-                        'https://picsum.photos/id/${snapshot.data!.events![index].id}/700/300',
+                        'https://picsum.photos/id/${event.id}/700/300',
                         fit: BoxFit.cover,
                         height: 200,
                         width: 500,
                         errorBuilder: (context, error, stackTrace) {
                           return const SizedBox(
                             height: 200,
-                            child: Center(
-                              child: Text('Image not found'),
-                            ),
+                            child: Center(child: Text('Image not found')),
                           );
                         },
                       ),
                       const SizedBox(height: 16),
                       Text(
-                        'title',
+                        event.name!,
                         style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -74,7 +72,7 @@ class IndexView extends GetView {
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'description',
+                        event.description!,
                         style: const TextStyle(
                           fontSize: 16,
                           color: Colors.grey,
@@ -83,7 +81,6 @@ class IndexView extends GetView {
                       const SizedBox(height: 16),
                       Row(
                         children: [
-                          // Ikon lokasi
                           const Icon(
                             Icons.location_on,
                             color: Colors.red,
@@ -91,7 +88,7 @@ class IndexView extends GetView {
                           const SizedBox(width: 8),
                           Expanded(
                             child: Text(
-                              'location',
+                              event.location!,
                               style: const TextStyle(
                                 fontSize: 16,
                                 color: Colors.black,
@@ -100,10 +97,8 @@ class IndexView extends GetView {
                           ),
                         ],
                       ),
-                      Divider(
-                        height: 10,
-                      ),
-                      SizedBox(height: 16),
+                      Divider(height: 10),
+                      const SizedBox(height: 16),
                     ],
                   ),
                 );
@@ -111,64 +106,6 @@ class IndexView extends GetView {
             );
           },
         ),
-      ),
-    );
-  }
-
-  ZoomTapAnimation eventList() {
-    return ZoomTapAnimation(
-      onTap: () {
-        Get.to(() => EventDetailView(), id: 1);
-      },
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Image.network(
-            'https://picsum.photos/seed/picsum/200/300',
-            fit: BoxFit.cover,
-            height: 200,
-            width: double.infinity,
-          ),
-          const SizedBox(height: 16),
-          Text(
-            'title',
-            style: const TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'description',
-            style: const TextStyle(
-              fontSize: 16,
-              color: Colors.grey,
-            ),
-          ),
-          const SizedBox(height: 16),
-          Row(
-            children: [
-              const Icon(
-                Icons.location_on,
-                color: Colors.red,
-              ),
-              const SizedBox(width: 8),
-              Expanded(
-                child: Text(
-                  'location',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    color: Colors.black,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          Divider(
-            height: 10,
-          ),
-          SizedBox(height: 16),
-        ],
       ),
     );
   }

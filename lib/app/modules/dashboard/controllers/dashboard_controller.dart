@@ -87,7 +87,8 @@ class DashboardController extends GetxController {
         'Event Added',
         snackPosition: SnackPosition.BOTTOM,
         backgroundColor: Colors.green,
-        colorText: Colors.white,);
+        colorText: Colors.white,
+      );
       nameController.clear();
       descriptionController.clear();
       eventDateController.clear();
